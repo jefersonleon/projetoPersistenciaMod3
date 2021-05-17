@@ -7,7 +7,11 @@ package br.ulbra.view;
 
 import br.ulbra.model.Usuario;
 import br.ulbra.model.UsuarioDao;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,9 +22,40 @@ public class FrCadUsuario extends javax.swing.JFrame {
     /**
      * Creates new form FrCadUsuario
      */
-    public FrCadUsuario() {
+    public FrCadUsuario() throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
+        showTable();
+    }
+
+    public void showTable() throws SQLException {
+        DefaultTableModel modelo = (DefaultTableModel) tbUsuarios.getModel();
+        modelo.setNumRows(0);
+        UsuarioDao udao = new UsuarioDao();
+        for (Usuario p : udao.read()) {
+            modelo.addRow(new Object[]{
+                p.getId(),
+                p.getNome(),
+                p.getEmail(),
+                p.getSenha(),
+                p.getTipo()
+            });
+        }
+    }
+
+    public void showTableForName(String nome) throws SQLException {
+        DefaultTableModel modelo = (DefaultTableModel) tbUsuarios.getModel();
+        modelo.setNumRows(0);
+        UsuarioDao udao = new UsuarioDao();
+        for (Usuario p : udao.readPesq(nome)) {
+            modelo.addRow(new Object[]{
+                p.getId(),
+                p.getNome(),
+                p.getEmail(),
+                p.getSenha(),
+                p.getTipo()
+            });
+        }
     }
 
     /**
@@ -51,9 +86,10 @@ public class FrCadUsuario extends javax.swing.JFrame {
         btPesquisar = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         btSalvar = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btAlterar = new javax.swing.JButton();
+        btExcluir = new javax.swing.JButton();
         txtSenha = new javax.swing.JPasswordField();
+        jButton1 = new javax.swing.JButton();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -129,6 +165,11 @@ public class FrCadUsuario extends javax.swing.JFrame {
                 "ID", "NOME", "E-MAIL", "SENHA", "TIPO"
             }
         ));
+        tbUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbUsuariosMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tbUsuarios);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, 490, 80));
@@ -140,6 +181,11 @@ public class FrCadUsuario extends javax.swing.JFrame {
         getContentPane().add(txtPesquisa, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 400, 280, 34));
 
         btPesquisar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/lupa.png"))); // NOI18N
+        btPesquisar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btPesquisarActionPerformed(evt);
+            }
+        });
         getContentPane().add(btPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 400, 44, 34));
 
         jLabel7.setText("SENHA");
@@ -149,6 +195,7 @@ public class FrCadUsuario extends javax.swing.JFrame {
         btSalvar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btSalvar.setForeground(new java.awt.Color(255, 255, 255));
         btSalvar.setText("SALVAR");
+        btSalvar.setEnabled(false);
         btSalvar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btSalvarActionPerformed(evt);
@@ -156,46 +203,137 @@ public class FrCadUsuario extends javax.swing.JFrame {
         });
         getContentPane().add(btSalvar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, 100, 34));
 
-        jButton2.setBackground(new java.awt.Color(255, 102, 0));
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("ALTERAR");
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 340, 100, 34));
+        btAlterar.setBackground(new java.awt.Color(255, 102, 0));
+        btAlterar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btAlterar.setForeground(new java.awt.Color(255, 255, 255));
+        btAlterar.setText("ALTERAR");
+        btAlterar.setEnabled(false);
+        btAlterar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAlterarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btAlterar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 340, 100, 34));
 
-        jButton3.setBackground(new java.awt.Color(255, 0, 0));
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("EXCLUIR");
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 340, 100, 34));
+        btExcluir.setBackground(new java.awt.Color(255, 0, 0));
+        btExcluir.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btExcluir.setForeground(new java.awt.Color(255, 255, 255));
+        btExcluir.setText("EXCLUIR");
+        btExcluir.setEnabled(false);
+        btExcluir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btExcluirActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btExcluir, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 340, 100, 34));
         getContentPane().add(txtSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 240, 34));
+
+        jButton1.setBackground(new java.awt.Color(0, 153, 255));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("NOVO");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 340, 70, 34));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
-       Usuario u = new Usuario();
-       u.setNome(txtNome.getText());
-       u.setEmail(txtEmail.getText());
-       u.setSenha(txtSenha.getText());
-       switch(txtTipo.getSelectedIndex()){
-           case 0:
-               u.setTipo("Administrador");
-               break;
-           case 1:
-               u.setTipo("Usuário");
-               break;
-       }
+        Usuario u = new Usuario();
+        u.setNome(txtNome.getText());
+        u.setEmail(txtEmail.getText());
+        u.setSenha(txtSenha.getText());
+        switch (txtTipo.getSelectedIndex()) {
+            case 0:
+                u.setTipo("Administrador");
+                break;
+            case 1:
+                u.setTipo("Usuário");
+                break;
+        }
         try {
             UsuarioDao udao = new UsuarioDao();
             udao.create(u);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro:"+e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro:" + e.getMessage());
         }
-       
-       
-       
-       
+
+
     }//GEN-LAST:event_btSalvarActionPerformed
+
+    private void btPesquisarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPesquisarActionPerformed
+
+        try {
+            showTableForName(txtPesquisa.getText());
+        } catch (SQLException ex) {
+            Logger.getLogger(FrCadUsuario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btPesquisarActionPerformed
+
+    private void tbUsuariosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbUsuariosMouseClicked
+        if (tbUsuarios.getSelectedRow() != -1) {
+            txtid.setText(tbUsuarios.getValueAt(tbUsuarios.getSelectedRow(), 0)
+                    .toString());
+            txtNome.setText(tbUsuarios.getValueAt(tbUsuarios.getSelectedRow(), 1)
+                    .toString());
+            txtEmail.setText(tbUsuarios.getValueAt(tbUsuarios.getSelectedRow(), 2)
+                    .toString());
+            txtSenha.setText(tbUsuarios.getValueAt(tbUsuarios.getSelectedRow(), 3)
+                    .toString());
+            txtTipo.setSelectedItem(tbUsuarios.getValueAt(tbUsuarios.getSelectedRow(), 4)
+                    .toString());
+            btSalvar.setEnabled(false);
+            btAlterar.setEnabled(true);
+            btExcluir.setEnabled(true);
+
+        }
+    }//GEN-LAST:event_tbUsuariosMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        btSalvar.setEnabled(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAlterarActionPerformed
+        Usuario u = new Usuario();
+        u.setId(Integer.parseInt(txtid.getText()));
+        u.setNome(txtNome.getText());
+        u.setEmail(txtEmail.getText());
+        u.setSenha(txtSenha.getText());
+        switch (txtTipo.getSelectedIndex()) {
+            case 0:
+                u.setTipo("Administrador");
+                break;
+            case 1:
+                u.setTipo("Usuário");
+                break;
+        }
+
+        UsuarioDao udao;
+        try {
+            udao = new UsuarioDao();
+            udao.update(u);
+            showTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(FrCadUsuario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_btAlterarActionPerformed
+
+    private void btExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btExcluirActionPerformed
+        Usuario u = new Usuario();
+        u.setId(Integer.parseInt(txtid.getText()));
+        UsuarioDao udao;
+        try {
+            udao = new UsuarioDao();
+            udao.delete(u);
+            showTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(FrCadUsuario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btExcluirActionPerformed
 
     /**
      * @param args the command line arguments
@@ -227,16 +365,21 @@ public class FrCadUsuario extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrCadUsuario().setVisible(true);
+                try {
+                    new FrCadUsuario().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(FrCadUsuario.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btAlterar;
+    private javax.swing.JButton btExcluir;
     private javax.swing.JButton btPesquisar;
     private javax.swing.JButton btSalvar;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 /**
@@ -39,7 +41,7 @@ public class UsuarioDao {
         }
         return check;
     }
-    // SALVA O USUARIO NO BANCO DE DADOS
+    // SALVA O USUARIO NO BANCO DE DADOS   ---- C
     public void create(Usuario u){
         PreparedStatement stmt = null;
         try {
@@ -59,7 +61,58 @@ public class UsuarioDao {
             ConnectionFactory.closeConnection(con, stmt);
         }
     }
-    //ALTERAR O USUARIO NO BANCO DE DADOS
+     //listagem de usuarios na tabela do formulario   ---   R
+    
+    public ArrayList<Usuario> read(){
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Usuario> usuarios = new ArrayList<Usuario>();
+        try {
+            stmt = con.prepareStatement("SELECT * FROM tbusuario");
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNome(rs.getString("nome"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setSenha(rs.getString("senha"));
+                usuario.setTipo(rs.getString("tipo"));
+                usuarios.add(usuario);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,"Erro:"+e.getMessage());
+        } finally{
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return (ArrayList<Usuario>) usuarios;
+    }
+    
+    public ArrayList<Usuario> readPesq(String nome){
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Usuario> usuarios = new ArrayList<Usuario>();
+        try {
+            stmt = con.prepareStatement("SELECT * FROM tbusuario WHERE nome LIKE ?");
+            stmt.setString(1, "%"+nome+"%");
+            rs = stmt.executeQuery();
+            while(rs.next()){
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNome(rs.getString("nome"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setSenha(rs.getString("senha"));
+                usuario.setTipo(rs.getString("tipo"));
+                usuarios.add(usuario);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,"Erro:"+e.getMessage());
+        } finally{
+            ConnectionFactory.closeConnection(con, stmt, rs);
+        }
+        return (ArrayList<Usuario>) usuarios;
+    }
+    
+    //ALTERAR O USUARIO NO BANCO DE DADOS   -- U 
     public void update(Usuario u){
         PreparedStatement stmt = null;
         try {
@@ -80,5 +133,30 @@ public class UsuarioDao {
             ConnectionFactory.closeConnection(con, stmt);
         }
     }
-    
+    //excluir do banco de dados   --- D
+    public void delete(Usuario u){
+            PreparedStatement stmt = null;
+        try {
+            stmt = con.prepareStatement("DELETE FROM tbusuario WHERE id = ?");
+           
+            stmt.setInt   (1, u.getId());
+            
+            if (JOptionPane.showConfirmDialog(null,"Exclusão", "Tem certeza que"
+                    + " deseja excluir o Usuario(a)"+u.getNome(),
+                    JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+                JOptionPane.showMessageDialog(null, "Usuario(a) "+u.getNome()
+                    +" excluído(a)com Sucesso!!");
+                stmt.executeUpdate();
+            }else{
+                JOptionPane.showMessageDialog(null, "A exclusão do Usuario(a) "+u.getNome()
+                    +" Cancelado(a)com Sucesso!!");
+            }
+   
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro:"+e.getMessage());
+        } finally{
+            ConnectionFactory.closeConnection(con, stmt);
+        }
+    }
+   
 }
