@@ -5,7 +5,10 @@
  */
 package br.ulbra.view;
 
+import br.ulbra.model.Usuario;
 import br.ulbra.model.UsuarioDao;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -138,20 +141,23 @@ public class FrLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btLogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btLogarActionPerformed
-         UsuarioDao usu = null;
+        UsuarioDao usu = null;
+
         try {
             usu = new UsuarioDao();
-             if(usu.checkLogin(txtEmail.getText(), txtSenha.getText())){
-             new FrMenu().setVisible(true);
-             this.dispose();
-         }else{
-             JOptionPane.showMessageDialog(null, "E-mail e/ou Senha inválido!");
-         }
-            
+
+            if (usu.checkLogin(txtEmail.getText(), txtSenha.getText())) {
+                new FrMenu().setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(null, "E-mail e/ou Senha inválido!");
+            }
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(FrLogin.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }//GEN-LAST:event_btLogarActionPerformed
 
     /**
