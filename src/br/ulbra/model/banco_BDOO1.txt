@@ -1,0 +1,82 @@
+-- phpMyAdmin SQL Dump
+-- version 5.0.2
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1:3306
+-- Tempo de geração: 07-Jun-2021 às 17:46
+-- Versão do servidor: 5.7.31
+-- versão do PHP: 7.3.21
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Banco de dados: `bdoo1`
+--
+CREATE DATABASE IF NOT EXISTS `bdoo1` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `bdoo1`;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tbusuario`
+--
+
+DROP TABLE IF EXISTS `tbusuario`;
+CREATE TABLE IF NOT EXISTS `tbusuario` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(30) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `senha` varchar(80) NOT NULL,
+  `tipo` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `tbusuario`
+--
+
+INSERT INTO `tbusuario` (`id`, `nome`, `email`, `senha`, `tipo`) VALUES
+(1, 'JEFERSON LEON', 'j', '42767516990368493138776584305024125808', 'ADMINISTRADOR'),
+(5, 'JANDIR OLIVEIRA', 'ja@gmail.com', '64008971422449873750789915759940780966', 'USUÁRIO'),
+(4, 'RITA SILVA', 'rita@gmail.com', '262621131988384517398251973778252260809', 'ADMINISTRADOR');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tbveiculo`
+--
+
+DROP TABLE IF EXISTS `tbveiculo`;
+CREATE TABLE IF NOT EXISTS `tbveiculo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `marca` varchar(50) NOT NULL,
+  `modelo` varchar(50) NOT NULL,
+  `ano` int(11) NOT NULL,
+  `cor` varchar(25) NOT NULL,
+  `placa` varchar(8) NOT NULL,
+  `motor` varchar(30) NOT NULL,
+  `km` varchar(8) NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `valorfipe` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `tbveiculo`
+--
+
+INSERT INTO `tbveiculo` (`id`, `marca`, `modelo`, `ano`, `cor`, `placa`, `motor`, `km`, `valor`, `valorfipe`) VALUES
+(1, 'ford', 'fiesta', 2005, 'branco', 'lln-8844', '6cv', '123456', '10000.00', '7000.00');
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
